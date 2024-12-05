@@ -15,9 +15,11 @@ imagem_bussola = pygame.image.load('./Bussola/bussola.png')
 imagem_ponteiro = pygame.image.load('./Bussola/ponteiro.png')
 imagem_ponteiro = pygame.transform.scale(imagem_ponteiro, (360, 100))
 
-# TEM QUE MEXER ESTA VARIAVEL PRA TROCAR
-angulo = 0  
+imagem_ponteiro_menor = pygame.image.load('./Bussola/ponteiro_menor.png')
+imagem_ponteiro_menor = pygame.transform.scale(imagem_ponteiro_menor, (180, 50))
 
+# TEM QUE MEXER ESTA VARIAVEL PRA TROCAR
+angulo = [0,90]
 
 def rotacionar_imagem(imagem, angulo):
     return pygame.transform.rotate(imagem, angulo)
@@ -42,12 +44,18 @@ def main():
                     angulo = float(conn.recv(1024).decode())
                     print(angulo)
             except: pass
+
+
         display.fill(fundo)
         display.blit(imagem_bussola, (largura//2 - imagem_bussola.get_width()//2, altura//2 - imagem_bussola.get_height()//2))
         
-        ponteiro_rotacionado = rotacionar_imagem(imagem_ponteiro, -angulo)
+        ponteiro_rotacionado = rotacionar_imagem(imagem_ponteiro, -angulo[0])
         display.blit(ponteiro_rotacionado, (largura//2 - ponteiro_rotacionado.get_width()//2, altura//2 - ponteiro_rotacionado.get_height()//2))
         
+        ponteiro_rotacionado2 = rotacionar_imagem(imagem_ponteiro_menor, -angulo[1])
+        display.blit(ponteiro_rotacionado2, (largura//2 - ponteiro_rotacionado.get_width()//2, altura//2 - ponteiro_rotacionado.get_height()//2))
+ 
+
         pygame.display.flip()
         pygame.time.delay(100)
 
