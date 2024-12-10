@@ -2,24 +2,25 @@ import pygame
 import socket
 pygame.init()
 
-largura, altura = 800, 600
+largura, altura = 800*1.2, 600*1.2
 display = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption("Bússola")
 
-fundo = (48, 25, 52)  # Roxo
+fundo = (225, 225 , 225)  # Roxo
 
 HOST = '127.0.0.1'    # The remote host
 PORT = 50007              # The same port as used by the server
 
-imagem_bussola = pygame.image.load('./Bussola/bussola.png')
-imagem_ponteiro = pygame.image.load('./Bussola/ponteiro.png')
-imagem_ponteiro = pygame.transform.scale(imagem_ponteiro, (360, 100))
+imagem_bussola = pygame.image.load('./AR1.png')
+imagem_bussola = pygame.transform.scale(imagem_bussola,(500,500))
 
-imagem_ponteiro_menor = pygame.image.load('./Bussola/ponteiro_menor.png')
-imagem_ponteiro_menor = pygame.transform.scale(imagem_ponteiro_menor, (180, 50))
+imagem_ponteiro = pygame.image.load('./tip.png')
+imagem_ponteiro = pygame.transform.scale_by(imagem_ponteiro, 0.23)
+
 
 # TEM QUE MEXER ESTA VARIAVEL PRA TROCAR
-angulo = [0,90]
+angulo = 0
+curr_rotation = 0
 
 def rotacionar_imagem(imagem, angulo):
     return pygame.transform.rotate(imagem, angulo)
@@ -27,37 +28,28 @@ def rotacionar_imagem(imagem, angulo):
 # Função principal
 def main():
     global angulo
+    global curr_rotation
     executando = True
 
     while executando:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 executando = False
-     
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+
+        with open(r"C:\Users\pedro\OneDrive\Documentos\Eletrica\Eletrica\TCC - Macapá\TCC-AoA\Final\Bussola\angle.txt","r") as file:
             try:
-                s.bind((HOST, PORT))
-                s.listen(1)
-                s.settimeout(0.2)
-                conn, addr = s.accept()
-                with conn:
-                    angulo = float(conn.recv(1024).decode())
-                    print(angulo)
+                angulo= -float(file.readline())-90
             except: pass
-
-
+        
         display.fill(fundo)
         display.blit(imagem_bussola, (largura//2 - imagem_bussola.get_width()//2, altura//2 - imagem_bussola.get_height()//2))
         
-        ponteiro_rotacionado = rotacionar_imagem(imagem_ponteiro, -angulo[0])
+        curr_rotation += (angulo-curr_rotation)/4
+        ponteiro_rotacionado = rotacionar_imagem(imagem_ponteiro, -curr_rotation)
         display.blit(ponteiro_rotacionado, (largura//2 - ponteiro_rotacionado.get_width()//2, altura//2 - ponteiro_rotacionado.get_height()//2))
-        
-        ponteiro_rotacionado2 = rotacionar_imagem(imagem_ponteiro_menor, -angulo[1])
-        display.blit(ponteiro_rotacionado2, (largura//2 - ponteiro_rotacionado.get_width()//2, altura//2 - ponteiro_rotacionado.get_height()//2))
- 
 
         pygame.display.flip()
-        pygame.time.delay(100)
+        pygame.time.delay(25)
 
     pygame.quit()
 
