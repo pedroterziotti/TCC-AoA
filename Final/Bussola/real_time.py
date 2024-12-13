@@ -33,8 +33,9 @@ classifier.load_model("./ML/xgboost/tw2/pd_row/pd_row_classifier.json")
 
 model = regressor
 
-azi_ma = [0]*6
-el_ma = [0]*6
+M=6
+azi_ma = [0]*M
+el_ma = [0]*M
 
 # Callback chamado quando o cliente recebe a resposta CONNACK do servidor.
 def on_connect(client, userdata, flags, rc):
@@ -68,17 +69,18 @@ def on_message(client, userdata, msg):
     angle= np.rad2deg(aoa_xz) +180
 
     with open(r"C:\Users\pedro\OneDrive\Documentos\Eletrica\Eletrica\TCC - Macapá\TCC-AoA\Final\Bussola\angle.txt","w") as file:
-        file.write(str(angle))
+        file.write(f"{angle},{el_ma[-1]},{azi_ma[-1]}")
 
-    print(f"Elevation I: {el_ma[-1]} \t Azimutal I: {azi_ma[-1]}")
-    print(f"Elevation: {np.mean(el_ma)} \t Azimutal: {np.mean(azi_ma)}")
-    print(f"AoA={angle} \n")
+    # print(f"Elevation I: {el_ma[-1]} \t Azimutal I: {azi_ma[-1]}")
+    # print(f"Elevation: {np.mean(el_ma)} \t Azimutal: {np.mean(azi_ma)}")
+    # print(f"AoA={angle} \n")
 
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
-client.connect("broker.hivemq.com", 1883, 60)
+#client.connect("broker.hivemq.com", 1883, 60)
 #client.connect("test.mosquitto.org", 1883, 60)
+client.connect("192.168.98.215", 1883, 60)
 
 client.loop_forever()
